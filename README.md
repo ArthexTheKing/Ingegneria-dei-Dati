@@ -13,3 +13,7 @@ Questa repository consiste nello svolgimento di 5 Homework proposti dal docente 
 * Python: 3.12+
 
 ## Studenti Collaboratori
+* Barone Pietro
+* di Mario Alessandro
+* Petrolini Guido
+* Ruffini Douglas
