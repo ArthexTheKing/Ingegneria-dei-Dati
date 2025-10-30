@@ -1,4 +1,0 @@
-Training deep learning models requires large labeled datasets.
-Popular datasets include MNIST, CIFAR-10, ImageNet, COCO, and LibriSpeech.
-Dataset quality and diversity significantly impact model performance and generalization.
-Data augmentation techniques expand training data and help prevent overfitting.

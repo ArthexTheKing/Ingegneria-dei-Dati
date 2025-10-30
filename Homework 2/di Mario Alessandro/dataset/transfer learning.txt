@@ -1,0 +1,1 @@
+Il Transfer Learning è una tecnica potente in cui un modello, addestrato su un compito (dominio) molto grande, viene riutilizzato e adattato per un nuovo compito con dati limitati. Un esempio comune è l'uso di una CNN pre-addestrata (es. VGG, ResNet) per un nuovo problema di classificazione, congelando i primi strati e riaddestrando solo gli ultimi.

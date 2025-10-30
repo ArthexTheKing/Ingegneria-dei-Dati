@@ -1,4 +1,0 @@
-Deep learning training relies on gradient descent optimization.
-Backpropagation computes gradients layer by layer to update network parameters.
-Techniques like batch normalization, dropout, and weight initialization improve convergence and generalization.
-Proper training requires tuning learning rates, batch sizes, and regularization strategies.

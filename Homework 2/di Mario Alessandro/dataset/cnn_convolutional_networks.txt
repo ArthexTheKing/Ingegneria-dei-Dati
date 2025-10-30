@@ -1,4 +1,0 @@
-Convolutional neural networks are widely used for image classification and object detection.
-CNNs use convolutional layers to extract spatial features such as edges, textures, and shapes.
-Pooling layers reduce spatial dimensions, improving efficiency and robustness.
-Popular CNN architectures include LeNet, AlexNet, VGG, ResNet, and EfficientNet.
