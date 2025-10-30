@@ -1,0 +1,1 @@
+L'Apprendimento Non Supervisionato si concentra sulla scoperta di pattern nascosti in dati che non sono etichettati. Le tecniche includono il Clustering (raggruppamento di dati simili) e la Riduzione della Dimensionalità (es. autoencoder). Questo approccio è utile per l'analisi esplorativa dei dati e per la pre-elaborazione di grandi dataset.

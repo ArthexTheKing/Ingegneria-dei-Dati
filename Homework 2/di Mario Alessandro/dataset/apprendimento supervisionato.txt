@@ -1,0 +1,1 @@
+La maggior parte dei modelli di Deep Learning utilizza l'Apprendimento Supervisionato. Questo richiede un dataset etichettato, dove ogni esempio di input è associato al suo output corretto (l'etichetta). L'obiettivo è addestrare il modello a mappare l'input all'output con alta precisione, minimizzando la funzione di perdita. Esempi includono la classificazione e la regressione.

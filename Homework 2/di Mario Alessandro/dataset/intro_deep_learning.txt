@@ -1,4 +1,0 @@
-Deep learning is a subfield of machine learning focused on neural networks with many layers.
-It allows models to automatically learn hierarchical representations from data.
-Deep learning has revolutionized computer vision, natural language processing, speech recognition, and robotics.
-Modern deep learning techniques rely on large datasets, high computational power, and specialized hardware like GPUs.

@@ -1,0 +1,1 @@
+Le applicazioni del Deep Learning sono vastissime e includono la guida autonoma (Computer Vision e sensori), la diagnosi medica (analisi di immagini e risonanze), i sistemi di raccomandazione (Netflix, Amazon) e gli assistenti virtuali (NLP e sintesi vocale). La sua diffusione è dovuta alla combinazione di architetture profonde, grandi quantità di dati e potenza di calcolo (GPU).
