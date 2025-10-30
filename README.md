@@ -7,10 +7,11 @@ Repository per il Corso di Ingegneria dei Dati della Laurea Magistrale in Ingegn
 * [Studenti Collaboratori](#Studenti-Collaboratori)
 
 ## Informazioni Generali
-Questa repository consiste nello svolgimento di 5 Homework proposti dal docente del corso e un progetto finale. L'argomento riguarda le tecniche di Information Retrival e Ingegneria dei Dati
+Questa repository consiste nello svolgimento di 5 Homework proposti dal docente del corso e un progetto finale.
 
 ## Tecnologie
-* Python: 3.12+
+* Python: 3.14+
+* Elasticsearch: 9.2.0
 
 ## Studenti Collaboratori
 * Barone Pietro
