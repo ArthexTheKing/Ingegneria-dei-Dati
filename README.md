@@ -4,6 +4,7 @@ Repository per il Corso di Ingegneria dei Dati della Laurea Magistrale in Ingegn
 ## Tabella dei Contenuti
 * [Informazioni Generali](#Informazioni-Generali)
 * [Tecnologie](#Tecnologie)
+* [Installazione Dipendenze](#installazione-dipendenze)
 * [Studenti Collaboratori](#Studenti-Collaboratori)
 
 ## Informazioni Generali
@@ -12,6 +13,12 @@ Questa repository consiste nello svolgimento di 5 Homework proposti dal docente 
 ## Tecnologie
 * Python: 3.14+
 * Elasticsearch: 9.2.0
+
+## Installazione Dipendenze
+Librerie Python necessarie per l'esecuzione di tutti i progetti svolti
+```bash
+pip install -r requirements.txt
+```
 
 ## Studenti Collaboratori
 * Barone Pietro
