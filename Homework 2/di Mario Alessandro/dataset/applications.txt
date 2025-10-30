@@ -1,0 +1,4 @@
+Deep learning powers applications across many domains.
+Examples include autonomous driving, medical imaging, fraud detection, translation, and generative AI.
+In robotics, deep learning enables perception, control, and human-robot interaction.
+Generative models such as GANs and diffusion models produce realistic images, audio, and text.

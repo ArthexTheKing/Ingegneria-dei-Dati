@@ -1,0 +1,4 @@
+Optimization algorithms update neural network weights to minimize loss.
+Stochastic Gradient Descent is a foundational optimizer used in deep learning.
+Adam combines momentum and adaptive learning rates for faster convergence.
+Other optimizers include RMSprop, Adagrad, and LAMB for large-scale training.

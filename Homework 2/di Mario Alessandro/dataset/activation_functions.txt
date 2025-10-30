@@ -1,0 +1,4 @@
+Activation functions introduce non-linearity into neural networks.
+Common activations include ReLU, sigmoid, tanh, softmax, and GELU.
+ReLU is widely used due to its computational efficiency and effective gradients.
+Softmax is typically used for multi-class classification tasks.

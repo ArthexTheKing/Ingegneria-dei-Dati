@@ -1,0 +1,4 @@
+A neural network is composed of interconnected neurons organized in layers.
+Each neuron transforms its input using learnable weights and activation functions.
+Training a neural network involves adjusting weights using gradient descent and backpropagation.
+Neural networks can approximate complex, non-linear functions and solve tasks such as classification and regression.

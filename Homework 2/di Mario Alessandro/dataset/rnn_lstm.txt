@@ -1,0 +1,4 @@
+Recurrent neural networks process sequential data such as text and time series.
+Traditional RNNs struggle with long-term dependencies due to vanishing gradients.
+LSTM and GRU architectures improve memory handling, allowing better sequence modeling.
+RNNs are used in speech recognition, language modeling, and sentiment analysis.

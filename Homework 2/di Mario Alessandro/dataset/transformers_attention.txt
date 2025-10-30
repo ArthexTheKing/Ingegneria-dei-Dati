@@ -1,0 +1,4 @@
+Transformer models use self-attention mechanisms to process sequences in parallel.
+Attention allows the model to focus on relevant parts of the input context.
+Transformers outperform RNNs in machine translation, text generation, and question answering.
+Popular models include BERT, GPT, T5, and Vision Transformers for images.
