@@ -1,0 +1,1 @@
+Il deep learning è cruciale nella medicina per l'automazione di compiti complessi come la diagnosi di malattie. Esempi includono l'analisi di raggi X (radiologia), risonanze magnetiche e immagini istologiche. La sfida principale è ottenere grandi dataset medici etichettati in modo affidabile, ma i modelli stanno raggiungendo o superando la performance umana in compiti specifici.

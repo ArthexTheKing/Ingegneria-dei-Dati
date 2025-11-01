@@ -1,0 +1,1 @@
+Le sfide riguardano principalmente l'interpretabilità (il problema della 'black box'), cioè la difficoltà di comprendere perché il modello ha preso una certa decisione. Inoltre, l'addestramento richiede quantità voluminose di dati etichettati e una potenza computazionale notevole. Il bias nei dati può anche portare a decisioni ingiuste o errate in contesti critici.

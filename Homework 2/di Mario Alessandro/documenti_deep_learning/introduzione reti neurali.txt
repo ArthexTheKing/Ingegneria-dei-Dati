@@ -1,0 +1,1 @@
+Una rete neurale è il blocco fondamentale del deep learning. È composta da strati di neuroni interconnessi: input, uno o più hidden layer e l'output. Ogni connessione ha un peso e ogni neurone ha un bias. Funzioni di attivazione come ReLU e Sigmoid introducono la non linearità. Il compito più comune è la classificazione di pattern.
