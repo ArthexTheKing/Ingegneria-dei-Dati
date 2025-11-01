@@ -1,1 +1,0 @@
-Il Natural Language Processing (NLP) è stato rivoluzionato dai modelli basati sull'architettura Transformer. Questo modello ha introdotto il concetto di Self-Attention (auto-attenzione), che permette di pesare l'importanza delle diverse parole nella sequenza, catturando dipendenze a lungo raggio. Modelli come BERT e GPT sono esempi di Transformer.

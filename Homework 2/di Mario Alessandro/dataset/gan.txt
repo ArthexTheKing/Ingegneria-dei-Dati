@@ -1,1 +1,0 @@
-Le Generative Adversarial Networks (GAN) sono una classe di architetture utilizzate per l'IA generativa. Consistono in due reti neurali: un Generatore che crea nuovi dati (es. immagini) e un Discriminatore che cerca di distinguere i dati generati da quelli reali. Le due reti si addestrano in un gioco a somma zero, migliorando entrambe nel tempo.
