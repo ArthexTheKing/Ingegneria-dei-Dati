@@ -21,7 +21,9 @@ pip install -r requirements.txt
 ```
 
 ## Studenti Collaboratori
-* Barone Pietro
-* di Mario Alessandro
-* Petrolini Guido
-* Ruffini Douglas
+| Studente | Matricola |
+| :--- | :---: |
+| Barone Pietro | 579635 |
+| di Mario Alessandro | 547297 |
+| Petrolini Guido | 629688 |
+| Ruffini Douglas | 482379 |
