@@ -25,5 +25,5 @@ pip install -r requirements.txt
 | :--- | :---: |
 | Barone Pietro | 579635 |
 | di Mario Alessandro | 547297 |
-| Petrolini Guido | 629688 |
+| Petrolito Guido | 629688 |
 | Ruffini Douglas | 482379 |
