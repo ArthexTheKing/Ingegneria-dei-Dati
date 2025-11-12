@@ -1,0 +1,1 @@
+L’information retrieval studia come rappresentare, archiviare e recuperare informazioni pertinenti da grandi collezioni di dati. Combina linguistica computazionale e modelli statistici per ordinare i risultati per rilevanza. È alla base dei motori di ricerca moderni e dei sistemi di raccomandazione.

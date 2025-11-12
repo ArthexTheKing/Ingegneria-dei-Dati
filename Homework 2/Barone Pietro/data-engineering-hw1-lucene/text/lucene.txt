@@ -1,0 +1,1 @@
+Apache Lucene è una libreria Java open-source per la ricerca full-text. Fornisce strutture efficienti per indicizzazione e recupero dei documenti tramite inverted index, scoring e ranking. È la base tecnologica di soluzioni come Elasticsearch e Solr, note per velocità e precisione.

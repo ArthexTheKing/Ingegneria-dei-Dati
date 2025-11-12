@@ -1,0 +1,1 @@
+Elasticsearch è un motore di ricerca e analisi distribuito basato su Lucene. Consente indicizzazione in tempo quasi reale e interrogazioni complesse tramite API RESTful. È usato per log analysis, monitoraggio e big data, offrendo scalabilità orizzontale e aggregazioni potenti.

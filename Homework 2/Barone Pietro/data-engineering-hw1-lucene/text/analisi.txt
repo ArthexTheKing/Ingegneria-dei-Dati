@@ -1,0 +1,1 @@
+L’analisi del testo estrae significato da documenti scritti tramite tecniche di NLP. Comprende tokenizzazione, lemmatizzazione e riconoscimento di entità per individuare temi, sentiment o pattern semantici. È fondamentale per motori di ricerca, chatbot e sistemi di raccomandazione.

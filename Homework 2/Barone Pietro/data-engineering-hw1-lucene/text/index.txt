@@ -1,0 +1,1 @@
+Un inverted index è una struttura dati fondamentale per il recupero dell'informazione, usata per ottimizzare le ricerche. Essa mappa ogni termine a un elenco di documenti contenenti quel termine, come nel caso di Apache Lucene, migliorando l'efficienza delle query.
