@@ -1,8 +1,6 @@
 # Data Engineering Projects
 
-This repository contains all the **homework assignments** developed for the **Data Engineering** course at *Roma Tre University*.  
-
-## HW1 – Text Indexing with Lucene
+## HW2 – Text Indexing with Lucene
 
 ### Project Structure and Execution
 
