@@ -210,3 +210,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+Homework 5/__pycache__
+Homework 5/articles_arxiv

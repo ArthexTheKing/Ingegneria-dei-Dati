@@ -1,28 +1,21 @@
-from elasticsearch import Elasticsearch
-from indexer import setup_index
-from retriever import fetch_and_index_documents
+from content_retriever import retrive_content
+from tables_retriever import index_tables
+from figures_retriever import index_figures
+from config import inizialize_es
 
-ES_HOST = "http://localhost:9200"
-INDEX_NAME = "arxiv_index"
-SEARCH_QUERY = "text to speech"
-MAX_DOCS = 10
-OUTPUT_DIR = "articles_arxiv"
 
 def main():
-    try:
-        es = Elasticsearch(ES_HOST)
-        if not es.ping():
-            raise ConnectionError(f"Impossibile connettersi a {ES_HOST}")
-        print(f"Connesso a Elasticsearch ({ES_HOST})")
-    except Exception as e:
-        print(f"Errore Critico: {e}")
-        return
+    
+    es = inizialize_es()
 
-    # Setup (Cancella e ricrea indice)
-    setup_index(es, INDEX_NAME)
+    # Setup Indice Contenuti
+    retrive_content(es)
 
-    # Download, Pulizia e Indicizzazione
-    fetch_and_index_documents(es, INDEX_NAME, SEARCH_QUERY, OUTPUT_DIR, MAX_DOCS)
+    # Setup Indice Tabelle
+    index_tables(es)
+
+    # Setup Indice Figure
+    index_figures(es)
 
 if __name__ == "__main__":
     main()

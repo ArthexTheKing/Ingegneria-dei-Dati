@@ -7,6 +7,7 @@ import re
 import pandas as pd
 from elasticsearch import helpers
 from bs4 import BeautifulSoup
+from config import inizialize_es, INDEX_CONTENT_NAME, OUTPUT_DIR, SEARCH_QUERY, MAX_DOCS
 
 def sanitize_filename(title):
     """Pulisce il titolo per il file system."""
@@ -42,19 +43,23 @@ def clean_html_to_text(html_content):
     # Rimuove spazi eccessivi
     return " ".join(text.split())
 
-def fetch_and_index_documents(es_client, index_name, query, output_dir, max_results=5):
-    
-    prepare_output_folder(output_dir)
+def retrive_content(es_client):
+
+    # Setup (Cancella e ricrea indice)
+    setup_content_index(es_client)
+
+    # Prepara cartella output (cancella se esiste)
+    prepare_output_folder(OUTPUT_DIR)
 
     client = arxiv.Client()
     search = arxiv.Search(
-        query=f'ti:"{query}"',
-        max_results=max_results,
+        query=f'ti:"{SEARCH_QUERY}"',
+        max_results=MAX_DOCS,
         sort_by=arxiv.SortCriterion.SubmittedDate
     )
     
     results = list(client.results(search))
-    print(f"\nRicerca: '{query}' - Trovati: {len(results)} articoli.\n")
+    print(f"\nRicerca: '{SEARCH_QUERY}' - Trovati: {len(results)} articoli.\n")
     
     headers = {'User-Agent': 'Mozilla/5.0 (Custom Script)'}
     data_buffer = []
@@ -75,11 +80,12 @@ def fetch_and_index_documents(es_client, index_name, query, output_dir, max_resu
                 raw_html_content = resp.text
                 
                 # Salvataggio RAW su disco (Backup)
-                file_path = os.path.join(output_dir, f"{safe_title}.html")
+                file_path = os.path.join(OUTPUT_DIR, f"{safe_title}.html")
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(raw_html_content)
                 file_saved = True
             else:
+                print(html_url)
                 print("      HTML non valido o troppo piccolo.")
         except Exception as e:
             print(f"      Errore download: {e}")
@@ -114,20 +120,76 @@ def fetch_and_index_documents(es_client, index_name, query, output_dir, max_resu
     df = pd.DataFrame(data_buffer)
     
     # Dump CSV (senza il testo completo per non renderlo gigante)
-    csv_path = os.path.join(output_dir, "_metadata.csv")
+    csv_path = os.path.join(OUTPUT_DIR, "_metadata.csv")
     df.drop(columns=["full_text"]).to_csv(csv_path, index=False)
     print(f"\nMetadata salvati in CSV: {csv_path}")
 
     print(f"Indicizzazione bulk di {len(df)} documenti...")
     actions = [
-        {"_index": index_name, "_id": rec["arxiv_id"], "_source": rec}
+        {"_index": INDEX_CONTENT_NAME, "_id": rec["arxiv_id"], "_source": rec}
         for rec in df.to_dict(orient='records')
     ]
 
     try:
         success, errors = helpers.bulk(es_client, actions)
-        es_client.indices.refresh(index=index_name)
-        print(f"Completato! Documenti indicizzati: {success}")
-        if errors: print(f"Errori: {errors}")
+        es_client.indices.refresh(index=INDEX_CONTENT_NAME)
+        print(f"Completato: {success} documenti indicizzati\n\n")
+        if errors:
+            print(f"Errori: {errors}\n\n")
     except Exception as e:
-        print(f"Errore bulk: {e}")
+        print(f"Errore bulk: {e}\n\n")
+
+
+def setup_content_index(es_client):
+    """
+    Configura l'indice.
+    Se l'indice esiste, lo CANCELLA e lo ricrea
+    """
+    if es_client.indices.exists(index=INDEX_CONTENT_NAME):
+        print(f"L'indice '{INDEX_CONTENT_NAME}' esiste. Eliminazione in corso...")
+        es_client.indices.delete(index=INDEX_CONTENT_NAME)
+    
+    index_body = {
+        
+        "mappings": {
+            "properties": {
+                "arxiv_id": {"type": "keyword"},
+                
+                # per titolo 'english' (Stemming + Stopwords)
+                "title": {
+                    "type": "text", 
+                    "analyzer": "english" 
+                },
+                
+                # abstract 'english'
+                "abstract": {
+                    "type": "text", 
+                    "analyzer": "english"
+                },
+                
+                # full_text 'english' (Il testo arriva già pulito)
+                "full_text": {
+                    "type": "text", 
+                    "analyzer": "english"
+                },
+                
+                # Autori usiamo 'standard' per non fare stemming
+                "authors": {
+                    "type": "text",
+                    "analyzer": "standard", 
+                    "fields": {"raw": {"type": "keyword"}}
+                },
+                
+                "date": {"type": "date"},
+                "pdf_url": {"type": "keyword"},
+                "local_file_saved": {"type": "boolean"}
+            }
+        }
+    }
+
+    es_client.indices.create(index=INDEX_CONTENT_NAME, body=index_body)
+    print(f"Nuovo indice '{INDEX_CONTENT_NAME}' creato")
+
+if __name__ == "__main__":
+    es_client = inizialize_es()
+    retrive_content(es_client)
