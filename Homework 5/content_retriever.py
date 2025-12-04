@@ -9,6 +9,19 @@ from elasticsearch import helpers
 from bs4 import BeautifulSoup
 from config import inizialize_es, INDEX_CONTENT_NAME, OUTPUT_DIR, SEARCH_QUERY, MAX_DOCS
 
+# Cerca il tag <base href="..."> per trovare l'ID reale del paper.
+def get_base_url_from_html(soup, fallback_id=""):
+    base_tag = soup.find("base")
+    
+    if base_tag and base_tag.get("href"):
+        relative_path = base_tag.get("href")
+        if relative_path.startswith("/"):
+            return f"https://arxiv.org{relative_path}"
+        else:
+            return f"https://arxiv.org/{relative_path}"
+    
+    return f"https://arxiv.org/html/{fallback_id}/"
+
 def sanitize_filename(title):
     """Pulisce il titolo per il file system."""
     title = title.replace('$', '')
@@ -24,10 +37,8 @@ def prepare_output_folder(directory):
         shutil.rmtree(directory)
     os.makedirs(directory)
 
+# Usa BeautifulSoup per trasformare HTML sporco in testo pulito.
 def clean_html_to_text(html_content):
-    """
-    Usa BeautifulSoup per trasformare HTML sporco in testo pulito.
-    """
     if not html_content:
         return ""
     
@@ -61,7 +72,7 @@ def retrive_content(es_client):
     results = list(client.results(search))
     print(f"\nRicerca: '{SEARCH_QUERY}' - Trovati: {len(results)} articoli.\n")
     
-    headers = {'User-Agent': 'Mozilla/5.0 (Custom Script)'}
+    headers = {'User-Agent': 'Mozilla/5.0'}
     data_buffer = []
 
     for i, result in enumerate(results, 1):
@@ -133,18 +144,15 @@ def retrive_content(es_client):
     try:
         success, errors = helpers.bulk(es_client, actions)
         es_client.indices.refresh(index=INDEX_CONTENT_NAME)
-        print(f"Completato: {success} documenti indicizzati\n\n")
+        print(f"Completato: {success} documenti indicizzati\n")
         if errors:
             print(f"Errori: {errors}\n\n")
     except Exception as e:
         print(f"Errore bulk: {e}\n\n")
 
 
+# Configura l'indice. Se l'indice esiste, lo cancella e lo ricrea
 def setup_content_index(es_client):
-    """
-    Configura l'indice.
-    Se l'indice esiste, lo CANCELLA e lo ricrea
-    """
     if es_client.indices.exists(index=INDEX_CONTENT_NAME):
         print(f"L'indice '{INDEX_CONTENT_NAME}' esiste. Eliminazione in corso...")
         es_client.indices.delete(index=INDEX_CONTENT_NAME)

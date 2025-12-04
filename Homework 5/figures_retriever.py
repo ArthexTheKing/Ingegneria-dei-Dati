@@ -19,7 +19,7 @@ def index_figures(es):
     all_actions = []
 
     for filename in files:
-        paper_id = filename.replace(".html", "")
+        filename_stem = filename.replace(".html", "")
         file_path = os.path.join(OUTPUT_DIR, filename)
         
         try:
@@ -27,10 +27,10 @@ def index_figures(es):
                 html_content = f.read()
             
             # Estrazione Figure per ogni file
-            figures = parse_html_figures(html_content, paper_id)
+            figures = parse_html_figures(html_content, filename_stem)
             
             if figures:
-                print(f"   {paper_id[:30]}... -> Trovate {len(figures)} figure")
+                print(f"   {filename_stem[:30]}... -> Trovate {len(figures)} figure")
                 for fig in figures:
                     action = {
                         "_index": INDEX_FIGURES_NAME,
@@ -39,7 +39,7 @@ def index_figures(es):
                     }
                     all_actions.append(action)
             else:
-                print(f"   {paper_id[:30]}... -> Nessuna figura")
+                print(f"   {filename_stem[:30]}... -> Nessuna figura")
 
 
         except Exception as e:
@@ -67,15 +67,30 @@ def setup_figure_index(es_client):
     index_body = {
         "mappings": {
             "properties": {
-                "paper_id": {"type": "keyword"},
-                "figure_id": {"type": "keyword"}, # Es. "S1.F1"
+                # Identificativi
+                "paper_id": {"type": "keyword"},          # ID arXiv reale (es. 2511.11104)
+                "paper_title_slug": {"type": "keyword"},  # Nome file (es. Text_To_Speech)
+                "figure_id": {"type": "keyword"},         # ID Figura (es. S1.F1)
                 
-                "img_url": {"type": "keyword"},   # URL dell'immagine (non analizzato)
+                # Dati Immagine
+                "img_url": {"type": "keyword"},           # URL Web assoluto
+                "local_src": {"type": "keyword"},         # Path relativo originale
                 
-                # Usiamo l'analyzer built-in "english"
-                "caption": {"type": "text", "analyzer": "english"}, 
-                "mentions": {"type": "text", "analyzer": "english"},
-                "context_paragraphs": {"type": "text", "analyzer": "english"}
+                # Contenuto Testuale (Analyzer English)
+                "caption": {
+                    "type": "text", 
+                    "analyzer": "english"
+                },
+                
+                # Contesto e Citazioni
+                "mentions": {
+                    "type": "text", 
+                    "analyzer": "english"
+                },
+                "context_paragraphs": {
+                    "type": "text", 
+                    "analyzer": "english"
+                }
             }
         }
     }

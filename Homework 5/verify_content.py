@@ -16,14 +16,23 @@ def verify_index_content():
         return
 
     doc = resp['hits']['hits'][0]['_source']
-    full_text = doc.get('full_text', "")
-    title = doc.get('title', "")
+    doc_id = resp['hits']['hits'][0]['_id']
 
-    print(f"\nTitolo: {title}")
+    print(f"ID documento: {doc.get('arxiv_id')}") # ID documento
+    print(f"Titolo: {doc.get('title')}") # titolo
+    print(f"Data: {doc.get('date')}") # data
+    print(f"Autore: {doc.get('authors')}") # autori
+    print(f"URL PDF: {doc.get('pdf_url')}") # URL PDF
+    print(f"Path locale: {doc.get('local_file_saved')}") # Path locale
+    print(f"ID documento in ES: {doc_id}") # ID in ES
+
+    # Mostra l'abstract
+    print("\nAbstract (Anteprima):")
+    print(" ".join(doc.get('abstract')[:300].split()) + "...")
 
     # Mostra il contenuto salvato
     print("\nContenuto Salvato (Anteprima):")
-    print(" ".join(full_text[:300].split()) + "...")
+    print(" ".join(doc.get('full_text')[:300].split()) + "...")
 
 
 if __name__ == "__main__":

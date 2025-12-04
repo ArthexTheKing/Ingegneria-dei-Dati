@@ -1,9 +1,11 @@
+import re
 from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 import numpy as np
 from config import TFIDF_THRESHOLD, clean_text
+from content_retriever import get_base_url_from_html
 
 # Stopwords estese per le tabelle
 CUSTOM_STOPWORDS = list(ENGLISH_STOP_WORDS.union([
@@ -13,13 +15,18 @@ CUSTOM_STOPWORDS = list(ENGLISH_STOP_WORDS.union([
     "column", "row", "section", "eq", "equation", "al", "et"
 ]))
 
+# Estrae tabelle, caption e contesto (TF-IDF).
+def parse_html_tables(html_content, filename_stem):
 
-def parse_html_tables(html_content, paper_id):
-    """
-    Estrae tabelle, caption e contesto (TF-IDF).
-    """
     soup = BeautifulSoup(html_content, "html.parser")
     extracted_tables = []
+    
+    # ID reale
+    base_url = get_base_url_from_html(soup, fallback_id=filename_stem)
+    
+    # Estrae l'ID numerico (es. 2511.11104) dall'URL base tramite Regex
+    match_id = re.search(r'/html/([\d\.]+v?\d?)/?', base_url)
+    real_arxiv_id = match_id.group(1) if match_id else filename_stem
     
     # prepara tutti i paragrafi
     all_paragraphs = soup.find_all("p")
@@ -81,22 +88,22 @@ def parse_html_tables(html_content, paper_id):
             # Calcolo similarità
             similarities = cosine_similarity(table_vector, tfidf_matrix).flatten()
             
-            # Soglia: 0.15 è un buon bilanciamento
-            THRESHOLD = 0.20
-            relevant_indices = np.where(similarities > THRESHOLD)[0]
+            # Soglia
+            relevant_indices = np.where(similarities > TFIDF_THRESHOLD)[0]
             
             for idx in relevant_indices:
                 if idx not in mention_indices:
                     context_paragraphs.append(para_texts[idx])
-
+                    
         # Output Doc
         doc = {
-            "paper_id": paper_id,
-            "table_id": table_id,
-            "caption": caption_text,
-            "body_content": body_text,
-            "mentions": mentions,
-            "context_paragraphs": context_paragraphs
+            "paper_id": real_arxiv_id,                  # ID Numerico (es. 2511.11104)
+            "paper_title_slug": filename_stem,          # Nome file locale (es. Text_To_Speech)
+            "table_id": table_id,                       # ID HTML della tabella. Preso dall'attributo id="..." del tag <figure> (univoco)
+            "caption": caption_text,                    # Caption della tabella (testo pulito)
+            "body_content": body_text,                  # Contenuto della tabella (testo pulito)
+            "mentions": mentions,                       # Paragrafi che menzionano esplicitamente la tabella (completi)
+            "context_paragraphs": context_paragraphs    # Paragrafi rilevanti per similarità TF-IDF (completi)
         }
         extracted_tables.append(doc)
         

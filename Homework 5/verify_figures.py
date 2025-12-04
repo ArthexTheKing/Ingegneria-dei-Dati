@@ -16,10 +16,15 @@ def verify_index_figures():
         return
 
     doc = resp['hits']['hits'][0]['_source']
+    doc_id = resp['hits']['hits'][0]['_id']
 
-    print(f"Figure ID: {doc.get('figure_id')} (Paper: {doc.get('paper_id')})") # Identificativi
+    print(f"ID di ES per la figura: {doc_id}")
+    print(f"Figure ID: {doc.get('figure_id')}") # Identificativo figura
+    print(f"Paper ID: {doc.get('paper_id')}") # ID paper
+    print(f"Paper Title Slug: {doc.get('paper_title_slug')}") # Nome file paper
     print(f"URL: {doc.get('img_url')}") # URL immagine
-    print(f"Caption: {doc.get('caption')}\n") # Caption
+    print(f"Caption: {doc.get('caption')}") # Caption
+    print(f"Path locale: {doc.get('local_src')}\n") # Caption
     
     
     #  Menzioni (Citazioni esplicite)

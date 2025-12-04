@@ -55,7 +55,7 @@ def index_tables(es):
         try:
             success, errors = helpers.bulk(es, all_table_actions)
             es.indices.refresh(index=INDEX_TABLES_NAME)
-            print(f"Completato: {success} tabelle indicizzate\n\n")
+            print(f"Completato: {success} tabelle indicizzate\n")
             if errors:
                 print(f"Errori: {errors}\n\n")
         except Exception as e:
@@ -72,16 +72,29 @@ def setup_table_index(es_client):
     index_body = {
         "mappings": {
             "properties": {
-                "paper_id": {"type": "keyword"},
-                "table_id": {"type": "keyword"},
+                "paper_id": {"type": "keyword"},            # ID arXiv reale (es. 2511.11104)
+                "paper_title_slug": {"type": "keyword"},    # Nome file (es. Text_To_Speech)
+                "table_id": {"type": "keyword"},            # ID Tabella (es. S1.T1)
                 
-                # Caption e Body per ricerca full-text
-                "caption": {"type": "text", "analyzer": "english"},
-                "body_content": {"type": "text", "analyzer": "english"},
+                "caption": {
+                    "type": "text", 
+                    "analyzer": "english"
+                },
+
+                "body_content": {
+                    "type": "text", 
+                    "analyzer": "english"
+                },
                 
-                # Liste di paragrafi
-                "mentions": {"type": "text", "analyzer": "english"},
-                "context_paragraphs": {"type": "text", "analyzer": "english"}
+                "mentions": {
+                    "type": "text", 
+                    "analyzer": "english"
+                },
+
+                "context_paragraphs": {
+                    "type": "text", 
+                    "analyzer": "english"
+                }
             }
         }
     }

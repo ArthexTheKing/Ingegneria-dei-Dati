@@ -19,12 +19,11 @@ def verify_index_tables():
     doc = hit['_source']
     doc_id = hit['_id']
 
-    # Stampa Formattata dei Dati
-    print(f"\nDettaglio tabella (ID Documento ES: {doc_id})")
-
     # Identificativi
+    print(f"\nID di ES per la tabella: {doc_id}")
     print(f"Paper ID:  {doc.get('paper_id')}")
     print(f"Table ID:  {doc.get('table_id')}")
+    print(f"File Slug: {doc.get('paper_title_slug')}") 
 
     # Caption
     print(f"\nCaption:")

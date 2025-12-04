@@ -5,6 +5,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 import numpy as np
 from config import TFIDF_THRESHOLD, clean_text
+from content_retriever import get_base_url_from_html
 
 # Stopwords estese per le figure
 CUSTOM_STOPWORDS = list(ENGLISH_STOP_WORDS.union([
@@ -14,12 +15,17 @@ CUSTOM_STOPWORDS = list(ENGLISH_STOP_WORDS.union([
 ]))
 
 
-def parse_html_figures(html_content, paper_id):
-    """
-    Estrae figure, caption, URL e contesto (TF-IDF).
-    """
+# Estrae figure, caption, URL e contesto (TF-IDF).
+def parse_html_figures(html_content, filename):
+
     soup = BeautifulSoup(html_content, "html.parser")
     extracted_figures = []
+
+    base_url = get_base_url_from_html(soup, fallback_id=filename)
+    
+    # Estrae l'ID numerico (es. 2511.11104) dall'URL base
+    match_id = re.search(r'/html/([\d\.]+v?\d?)/?', base_url)
+    real_arxiv_id = match_id.group(1) if match_id else filename
     
     # Preparazione corpus
     all_paragraphs = soup.find_all("p")
@@ -55,7 +61,7 @@ def parse_html_figures(html_content, paper_id):
         if img_tag and img_tag.has_attr('src'):
             img_src = img_tag['src']
             # Ricostruiamo l'URL assoluto per utilità
-            full_url = f"https://arxiv.org/html/{paper_id}/{img_src}"
+            full_url = f"{base_url}{img_src}"
 
         # Menzioni (Link espliciti)
         mentions = []
@@ -89,14 +95,15 @@ def parse_html_figures(html_content, paper_id):
 
         # Creazione oggetto
         doc = {
-            "paper_id": paper_id,
-            "figure_id": fig_id,
-            "img_url": full_url,   # Salva l'URL completo
-            "local_src": img_src,  # Salva anche il path locale
-            "caption": caption_text,
-            "mentions": mentions,
-            "context_paragraphs": context_paragraphs
+            "paper_id": real_arxiv_id,                  # ID numerico (es. 2511.11104)
+            "paper_title_slug": filename,               # Nome del file senza estensione
+            "figure_id": fig_id,                        # ID HTML della figura. Preso dall'attributo id="..." del tag <figure> (univoco)
+            "img_url": full_url,                        # URL assoluto dell'immagine (https://arxiv.org/html/2511.11104v1/figures/dual-biases-v2.png)
+            "local_src": img_src,                       # Salva anche il path locale (figures/dual-biases-v2.png)
+            "caption": caption_text,                    # Testo della caption
+            "mentions": mentions,                       # Paragrafi che menzionano esplicitamente la figura (completi)
+            "context_paragraphs": context_paragraphs    # Paragrafi rilevanti per similarità TF-IDF (completi)
         }
         extracted_figures.append(doc)
-        
+
     return extracted_figures
