@@ -1,7 +1,7 @@
 import os
 from elasticsearch import helpers
 from tables_extractor import parse_html_tables
-from config import INDEX_TABLES_NAME, OUTPUT_DIR, inizialize_es
+from config import INDEX_TABLES_NAME, OUTPUT_DIR_ARXIV, inizialize_es
 
 def index_tables(es):
     
@@ -9,17 +9,17 @@ def index_tables(es):
     setup_table_index(es)
 
     # Lettura File e Elaborazione
-    if not os.path.exists(OUTPUT_DIR):
-        print(f"Cartella {OUTPUT_DIR} non trovata")
+    if not os.path.exists(OUTPUT_DIR_ARXIV):
+        print(f"Cartella {OUTPUT_DIR_ARXIV} non trovata")
         return
 
-    files = [f for f in os.listdir(OUTPUT_DIR) if f.endswith(".html")]
-    print(f"Trovati {len(files)} file HTML in '{OUTPUT_DIR}'. Inizio estrazione tabelle...")
+    files = [f for f in os.listdir(OUTPUT_DIR_ARXIV) if f.endswith(".html")]
+    print(f"Trovati {len(files)} file HTML in '{OUTPUT_DIR_ARXIV}'. Inizio estrazione tabelle...")
     all_table_actions = []
     total_tables_found = 0
 
     for filename in files:
-        file_path = os.path.join(OUTPUT_DIR, filename)
+        file_path = os.path.join(OUTPUT_DIR_ARXIV, filename)
         
         # ID dell'articolo (dal nome file o da logica custom)
         paper_id = filename.replace(".html", "")

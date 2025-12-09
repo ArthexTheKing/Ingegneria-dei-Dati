@@ -1,7 +1,7 @@
 import os
 from elasticsearch import helpers
 from figures_extractor import parse_html_figures
-from config import INDEX_FIGURES_NAME, OUTPUT_DIR, inizialize_es
+from config import INDEX_FIGURES_NAME, OUTPUT_DIR_ARXIV, inizialize_es
 
 def index_figures(es):
     
@@ -9,18 +9,18 @@ def index_figures(es):
     setup_figure_index(es)
 
     # Lettura File e Elaborazione
-    if not os.path.exists(OUTPUT_DIR):
-        print(f"Cartella {OUTPUT_DIR} mancante.")
+    if not os.path.exists(OUTPUT_DIR_ARXIV):
+        print(f"Cartella {OUTPUT_DIR_ARXIV} mancante.")
         return
 
-    files = [f for f in os.listdir(OUTPUT_DIR) if f.endswith(".html")]
+    files = [f for f in os.listdir(OUTPUT_DIR_ARXIV) if f.endswith(".html")]
     print(f"Trovati {len(files)} file. Inizio estrazione figure...")
 
     all_actions = []
 
     for filename in files:
         filename_stem = filename.replace(".html", "")
-        file_path = os.path.join(OUTPUT_DIR, filename)
+        file_path = os.path.join(OUTPUT_DIR_ARXIV, filename)
         
         try:
             with open(file_path, "r", encoding="utf-8") as f:
