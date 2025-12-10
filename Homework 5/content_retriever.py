@@ -39,21 +39,24 @@ def prepare_output_folder(directory):
         shutil.rmtree(directory)
     os.makedirs(directory)
 
-# Usa BeautifulSoup per trasformare HTML sporco in testo pulito.
 def clean_html_to_text(html_content):
     if not html_content:
         return ""
     
     soup = BeautifulSoup(html_content, "html.parser")
     
-    # Rimuove script, stili, head, meta
+    # Rimuove script, stili, head, meta (Standard)
     for element in soup(["script", "style", "head", "meta", "noscript", "iframe"]):
         element.extract()
+
+    # Rimuove l'Abstract dall'HTML
+    abstract_div = soup.find("div", class_="ltx_abstract")
+    if abstract_div:
+        abstract_div.extract() # Lo cancella dall'albero HTML
     
-    # Estrae il testo (separator=' ' evita che le parole si incollino)
+    # Estrae il testo rimanente
     text = soup.get_text(separator=' ')
     
-    # Rimuove spazi eccessivi
     return " ".join(text.split())
 
 def bulk_index(es_client, df):
@@ -111,8 +114,7 @@ def download_html_arxiv(es_client):
                     f.write(raw_html_content)
                 file_saved = True
             else:
-                print(html_url)
-                print("      HTML non valido o troppo piccolo.")
+                print("      HTML non valido o troppo piccolo (uso abstract come fallback)")
         except Exception as e:
             print(f"      Errore download: {e}")
 
@@ -121,7 +123,7 @@ def download_html_arxiv(es_client):
         if raw_html_content:
             cleaned_text = clean_html_to_text(raw_html_content)
         else:
-            cleaned_text = result.summary # Fallback
+            cleaned_text = result.summary # Fallback (ci metti l'abstract)
 
 
         # Preparazione dati
@@ -133,7 +135,7 @@ def download_html_arxiv(es_client):
             "date": result.published,
             "abstract": result.summary,
             "full_text": cleaned_text,
-            "pdf_url": result.pdf_url,
+            "pdf_url": html_url,
             "local_file_saved": file_saved
         }
         
