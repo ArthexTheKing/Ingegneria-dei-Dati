@@ -1,0 +1,17 @@
+# Web Framework
+Flask==3.0.0
+
+# Database / Search
+elasticsearch==9.2.0
+
+# Data Science / NLP
+scikit-learn>=1.3.0
+numpy>=1.24.0
+beautifulsoup4>=4.12.0
+pandas>=2.1.0
+
+# Utilities / APIs
+arxiv>=2.0.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+lxml>=4.9.0  # Consigliato per parsing XML/HTML più veloce

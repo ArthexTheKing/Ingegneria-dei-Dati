@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Corpus Search</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container search-container">
+    <div class="text-center mb-5">
+        <h1>🔍 Corpus Search Engine</h1>
+        <p class="text-muted">Ricerca semantica su Documenti, Tabelle e Figure</p>
+    </div>
+
+    <div class="card p-4 shadow-sm mb-4">
+        <form action="/" method="POST">
+            <div class="input-group mb-3">
+                <input type="text" name="query" class="form-control form-control-lg" 
+                       placeholder="Es. 'text to speech' AND 'transformer'..." 
+                       value="{{ query }}" required>
+                <button class="btn btn-primary btn-lg" type="submit">Cerca</button>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="mode" id="modeAll" value="all" 
+                           {% if selected_mode == 'all' %}checked{% endif %}>
+                    <label class="form-check-label" for="modeAll">Globale</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="mode" id="modeDocs" value="docs" 
+                           {% if selected_mode == 'docs' %}checked{% endif %}>
+                    <label class="form-check-label" for="modeDocs">Documenti</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="mode" id="modeTables" value="tables" 
+                           {% if selected_mode == 'tables' %}checked{% endif %}>
+                    <label class="form-check-label" for="modeTables">Tabelle</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="mode" id="modeFigures" value="figures" 
+                           {% if selected_mode == 'figures' %}checked{% endif %}>
+                    <label class="form-check-label" for="modeFigures">Figure</label>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if query %}
+        <h5 class="mb-3 text-secondary">Trovati {{ total_hits }} risultati</h5>
+        
+        {% for res in results %}
+        <div class="card result-card border-{{ res.type }} shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="card-title">
+                        {% if res.url %}
+                            <a href="{{ res.url }}" target="_blank" class="text-decoration-none">{{ res.title_or_slug }}</a>
+                        {% else %}
+                            {{ res.title_or_slug }}
+                        {% endif %}
+                    </h5>
+                    <span class="badge bg-secondary type-badge">{{ res.type }}</span>
+                </div>
+                
+                <h6 class="card-subtitle mb-2 text-muted small">
+                    Paper ID: {{ res.paper_id }} | Score: {{ "%.2f"|format(res.score) }}
+                </h6>
+
+                <p class="card-text mt-3">
+                    <strong>
+                        {% if res.type == 'docs' %}Abstract:{% else %}Caption:{% endif %}
+                    </strong> 
+                    {{ res.primary_text | safe }}
+                </p>
+
+                {% if res.secondary_text %}
+                <p class="card-text small text-muted bg-light p-2 rounded">
+                    <strong>Contesto/Match:</strong> 
+                    {{ res.secondary_text | safe }}
+                </p>
+                {% endif %}
+
+                {% if res.type == 'figures' and res.source_data.img_url %}
+                <div class="mt-3">
+                    <img src="{{ res.source_data.img_url }}" alt="Figure preview" class="img-thumbnail" style="max-height: 200px;">
+                    <br>
+                    <small class="text-muted text-break">{{ res.source_data.img_url }}</small>
+                </div>
+                {% endif %}
+                
+                 {% if res.type == 'tables' %}
+                 <div class="mt-2 text-muted" style="font-size: 0.85rem;">
+                     <em>Contenuto Tabella (snippet): {{ res.source_data.body_content[:150] }}...</em>
+                 </div>
+                 {% endif %}
+
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if total_hits == 0 %}
+            <div class="alert alert-warning text-center">Nessun risultato trovato per questa query.</div>
+        {% endif %}
+
+    {% endif %}
+</div>
+
+</body>
+</html>

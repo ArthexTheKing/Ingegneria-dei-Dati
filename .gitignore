@@ -211,7 +211,7 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# ignore project element
 Homework 5/__pycache__
-Homework 5/articles_arxiv
-Homework 5/articles_pubmed
 Homework 5/.env
+Homework 5/data
