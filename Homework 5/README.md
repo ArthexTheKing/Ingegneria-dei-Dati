@@ -2,101 +2,74 @@
 
 Questo progetto è un motore di ricerca semantico modulare progettato per recuperare, analizzare e indicizzare letteratura scientifica proveniente da ArXiv e PubMed Central (PMC).
 
-Il sistema indicizza il testo completo dei documenti ed estrae tabelle e figure come entità di ricerca indipendenti, arricchendole con il contesto semantico (paragrafi rilevanti) calcolato tramite algoritmi TF-IDF e Cosine Similarity.
+Il sistema indicizza il testo completo dei documenti ed estrae separatamente tabelle e figure, arricchendole con il contesto semantico (paragrafi rilevanti) calcolato tramite algoritmi TF-IDF e Cosine Similarity.
 
 ## Funzionalità Principali
 
 * **Ingestion Multi-Sorgente:** Scarica automaticamente metadati e contenuti completi da ArXiv (via API e HTML) e PubMed Central.
-* **Strategia Ibrida PubMed:** Utilizza file XML per l'estrazione accurata dei metadati (titolo, autori, abstract, data) e parsing HTML per i contenuti multimediali.
+* **Strategia Ibrida PubMed:** Utilizza file XML per l'estrazione accurata dei metadati e parsing HTML per i contenuti multimediali.
 * **Estrazione Multimediale:** Parsing avanzato dell'HTML per separare figure e tabelle dal testo principale.
-* **Analisi Semantica del Contesto:** Utilizza TfidfVectorizer per associare a ogni figura o tabella i paragrafi del testo che la descrivono, migliorando la precisione della ricerca.
+* **Analisi Semantica del Contesto:** Utilizza `TfidfVectorizer` per associare a ogni figura o tabella i paragrafi del testo che la descrivono o citano.
 * **Backend Elasticsearch:** Indicizzazione su tre indici separati: Documenti, Tabelle e Figure.
 * **Doppia Interfaccia:**
-  * **CLI Shell:** Interfaccia a riga di comando per test e query rapide.
-  * **Web App:** Interfaccia web basata su Flask con evidenziazione dei risultati (highlighting).
+  * **CLI Shell:** Interfaccia a riga di comando per query rapide.
+  * **Web App:** Interfaccia web basata su Flask con evidenziazione dei risultati (highlighting) e anteprima immagini.
 
 ## Struttura del Progetto
 
-Il progetto segue un'architettura modulare:
-
 search_engine_project/
-├── data/                   # Cartella di output per i file scaricati (generata a runtime)
+├── data/                   # Cartella di output (generata a runtime)
 ├── src/
-│   ├── config.py           # Configurazione centralizzata (query, percorsi, costanti)
-│   ├── core/               # Gestione connessione Elasticsearch e utility
-│   ├── ingestion/          # Moduli di download (ArXiv e PubMed)
-│   ├── processing/         # Logica di estrazione HTML e analisi TF-IDF
-│   └── web/                # Applicazione Flask
-├── run_pipeline.py         # Script per scaricare, processare e indicizzare i dati
-├── run_shell.py            # Interfaccia di ricerca a riga di comando (CLI)
-├── run_web.py              # Server web per l'interfaccia grafica
+│   ├── config.py           # Configurazione centralizzata
+│   ├── core/               # Gestione Elasticsearch e utility
+│   ├── ingestion/          # Moduli download (ArXiv/PubMed)
+│   ├── processing/         # Estrattore HTML e Analisi Semantica
+│   └── web/                # Applicazione Flask e template
+├── run_pipeline.py         # Script di indicizzazione (ETL)
+├── run_shell.py            # Interfaccia CLI
+├── run_web.py              # Server Web
+├── docker-compose.yml      # Configurazione Elasticsearch
 ├── requirements.txt        # Dipendenze Python
 └── README.md               # Documentazione
 
 ## Prerequisiti
 
 * Python 3.9 o superiore
-* Elasticsearch 8.x (in esecuzione locale o remota)
+* Docker e Docker Compose (per eseguire Elasticsearch)
 * Connessione internet attiva
 
 ## Installazione
 
-1. Clonare il repository o scaricare i file del progetto.
+1. **Clonare il repository:**
+   git clone <url-tua-repo>
+   cd search_engine_project
 
-2. Creare un ambiente virtuale (opzionale ma consigliato):
+2. **Creare un ambiente virtuale (consigliato):**
    python -m venv venv
-   source venv/bin/activate  # Su Linux/Mac
+   source venv/bin/activate  # Linux/Mac
    # oppure
-   venv\Scripts\activate     # Su Windows
+   venv\Scripts\activate     # Windows
 
-3. Installare le dipendenze:
+3. **Installare le dipendenze:**
    pip install -r requirements.txt
 
-4. Configurare Elasticsearch:
-   Assicurarsi che Elasticsearch sia attivo. Il progetto punta di default a http://localhost:9200.
-   È possibile modificare questo parametro nel file src/config.py o tramite variabile d'ambiente ES_HOST.
+4. **Avviare Elasticsearch:**
+   Il progetto include un file `docker-compose.yml` preconfigurato (versione 9.2.0, senza sicurezza per sviluppo locale).
+   
+   docker-compose up -d
 
-## Utilizzo
+   Verificare che sia attivo su: http://localhost:9200
 
-### 1. Indicizzazione (Pipeline)
+## Configurazione Ambiente (.env)
 
-Per scaricare gli articoli e popolare il database:
+**IMPORTANTE:** Questo progetto richiede variabili d'ambiente per funzionare correttamente. Poiché contengono informazioni sensibili o configurazioni locali, il file `.env` **NON è incluso nel repository**.
 
-python run_pipeline.py
+È necessario creare manualmente un file chiamato `.env` nella radice del progetto e inserire il seguente contenuto:
 
-Questo script esegue:
-- Reset degli indici Elasticsearch.
-- Download metadati e HTML da ArXiv e PubMed.
-- Estrazione di testo, figure e tabelle.
-- Calcolo del contesto semantico.
-- Indicizzazione dei dati.
+```env
+# Configurazione Elasticsearch
+ES_HOST=http://localhost:9200
 
-### 2. Ricerca CLI (Shell)
-
-Per cercare direttamente dal terminale:
-
-python run_shell.py
-
-Seguire le istruzioni a schermo per selezionare l'indice desiderato (Documenti, Tabelle, Figure o Tutto).
-
-### 3. Ricerca Web
-
-Per avviare l'interfaccia grafica:
-
-python run_web.py
-
-Aprire il browser all'indirizzo http://localhost:5000.
-
-## Configurazione
-
-Le impostazioni principali sono in src/config.py:
-
-* QUERY_ARXIV / QUERY_PUBMED: Stringhe di ricerca per il download.
-* MAX_DOCS: Numero massimo di documenti da scaricare per fonte.
-* TFIDF_THRESHOLD: Soglia di similarità (0.0 - 1.0) per il contesto semantico.
-* PUBMED_EMAIL: Richiesta dalle API di NCBI per identificare l'utente.
-
-## Note Tecniche
-
-- Gestione Errori XML: Il modulo di ingestion PubMed include funzioni helper (_safe_get_text, _safe_get_int) per gestire la mancanza di nodi o attributi nei file XML forniti da eutils.
-- Parsing Sicuro: L'estrattore HTML utilizza funzioni custom per gestire attributi ambigui di BeautifulSoup, prevenendo errori di tipo a runtime.
+# Configurazione PubMed (Obbligatoria per le API NCBI)
+# Inserire un indirizzo email valido per evitare blocchi IP da parte di NCBI
+PUBMED_EMAIL=tua_email@example.com
