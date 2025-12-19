@@ -6,30 +6,66 @@ from src.ingestion import download_arxiv_data, download_pubmed_data
 from src.processing import extract_multimedia
 
 def setup_indices(es: Elasticsearch):
-    """Crea o resetta gli indici in Elasticsearch."""
-    # Mappings semplificati per brevità
-    mappings_text = {"properties": {"title": {"type": "text", "analyzer": "english"}, "full_text": {"type": "text", "analyzer": "english"}}}
-    mappings_media = {"properties": {"caption": {"type": "text", "analyzer": "english"}, "context_paragraphs": {"type": "text", "analyzer": "english"}}}
+    """
+    Crea o resetta gli indici in Elasticsearch con i mapping corretti
+    """
+    
+    # Mapping documenti (INDEX_DOCS)
+    mappings_docs = {
+        "properties": {
+            "source": {"type": "keyword"},              # 'arxiv' o 'pubmed'
+            "document_id": {"type": "keyword"},         # ID univoco del documento
+            "pdf_url": {"type": "keyword"},             # URL del PDF
+            "local_file_saved": {"type": "boolean"},    # Se il file è salvato localmente
+            "date": {"type": "date"},                   # Data di pubblicazione
+            
+            # Testo analizzato
+            "title": {"type": "text", "analyzer": "english"},       # Titolo
+            "abstract": {"type": "text", "analyzer": "english"},    # Abstract
+            "full_text": {"type": "text", "analyzer": "english"},   # Testo completo
+            "authors": {"type": "text", "analyzer": "standard"}     # Autori
+        }
+    }
+
+    # Mapping multimedia (INDEX_TABLES e INDEX_FIGURES)
+    mappings_media = {
+        "properties": {
+            "source": {"type": "keyword"},      # 'arxiv' o 'pubmed'
+            "paper_id": {"type": "keyword"},    # ID del documento
+            "figure_id": {"type": "keyword"},   # ID della figura
+            "table_id": {"type": "keyword"},    # ID della tabella
+            "img_url": {"type": "keyword"},     # URL dell'immagine
+            
+            # Contenuto semantico (Testo)
+            "caption": {"type": "text", "analyzer": "english"},             # Didascalia
+            "body_content": {"type": "text", "analyzer": "english"},        # Solo per le tabelle
+            "mentions": {"type": "text", "analyzer": "english"},            # Riferimenti nel testo
+            "context_paragraphs": {"type": "text", "analyzer": "english"}   # Paragrafi di contesto
+        }
+    }
 
     indices = [
-        (Config.INDEX_DOCS, mappings_text),
+        (Config.INDEX_DOCS, mappings_docs),
         (Config.INDEX_TABLES, mappings_media),
         (Config.INDEX_FIGURES, mappings_media)
     ]
 
+    print("\nSetup Indici")
     for idx_name, mapping in indices:
         if es.indices.exists(index=idx_name):
+            print(f"Eliminazione indice esistente: {idx_name}")
             es.indices.delete(index=idx_name)
+        
         es.indices.create(index=idx_name, body={"mappings": mapping})
         print(f"Indice creato: {idx_name}")
 
 def run():
     es = get_es_client()
 
-    # 1. Setup
+    # Setup indici
     setup_indices(es)
 
-    # 2. Download e Indicizzazione Documenti (Docs)
+    # Download e Indicizzazione Documenti (Docs)
     df_arxiv = download_arxiv_data()
     df_pubmed = download_pubmed_data()
     
@@ -43,7 +79,7 @@ def run():
         actions = [{"_index": Config.INDEX_DOCS, "_id": d['document_id'], "_source": d} for d in all_docs]
         helpers.bulk(es, actions)
     
-    # 3. Estrazione e Indicizzazione Figure/Tabelle
+    # Estrazione e Indicizzazione Figure/Tabelle
     print("\nEstrazione Multimediale in corso...")
     
     all_figures = []
@@ -78,7 +114,7 @@ def run():
         actions = [{"_index": Config.INDEX_TABLES, "_id": f"{x['paper_id']}_{x['table_id']}", "_source": x} for x in all_tables]
         helpers.bulk(es, actions)
 
-    print("\nPipeline completata.")
+    print("\nIndicizzazione completata")
 
 if __name__ == "__main__":
     try:

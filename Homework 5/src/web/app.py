@@ -84,7 +84,7 @@ def search():
                     for hit in hits:
                         src = hit['_source']
                         
-                        # --- LOGICA TITOLO MIGLIORATA ---
+                        # Logica Titolo
                         title_val = "Senza Titolo"
                         
                         if visual_type == "docs":
