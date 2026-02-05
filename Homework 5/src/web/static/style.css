@@ -1,0 +1,52 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.search-container {
+    max-width: 800px;
+    margin: 50px auto;
+}
+
+.result-card {
+    margin-bottom: 20px;
+    border-left: 5px solid #0d6efd; /* Default border color */
+}
+
+.type-badge {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.highlight {
+    background-color: #fff3cd;
+    padding: 2px;
+    border-radius: 2px;
+}
+
+/* Stili specifici per tipo di risultato */
+.border-docs {
+    border-left-color: #0d6efd; /* Blu ArXiv/Standard */
+}
+
+.border-tables {
+    border-left-color: #198754; /* Verde Excel/Dati */
+}
+
+.border-figures {
+    border-left-color: #dc3545; /* Rosso Immagini */
+}
+
+/* Stile per il tag <mark> usato dall'highlighter di Elasticsearch */
+mark {
+    background-color: #ffeb3b;
+    padding: 0.1em;
+}
+
+/* Opzionale: migliora l'aspetto delle immagini nei risultati */
+.img-thumbnail {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    max-width: 100%;
+    height: auto;
+}
