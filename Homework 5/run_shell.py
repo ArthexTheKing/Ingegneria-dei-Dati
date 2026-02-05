@@ -2,6 +2,7 @@ import sys
 from elasticsearch import ConnectionError
 from src.config import Config
 from src.core import get_es_client
+import time   # <-- [AGGIUNTO] per misurare la latenza delle query (Esperimento 5)
 
 # --- CONFIGURAZIONE CAMPI DI RICERCA (Boosting) ---
 # Definiamo dove cercare e quanto pesare i campi.
@@ -114,14 +115,14 @@ def print_hit(hit, logic_type):
         print(f"\nCaption:\n{get_val('caption', 300)}")
         print(f"Contenuto:\n{get_val('body_content', 200)}")
         if 'context_paragraphs' in highlights:
-             print(f"\nContesto:\n{get_val('context_paragraphs')}")
+            print(f"\nContesto:\n{get_val('context_paragraphs')}")
 
     elif logic_type == "figures":
         print(f"Paper ID: {src.get('paper_id')} | Fig ID: {src.get('figure_id')}")
         print(f"URL Img:  {src.get('img_url')}")
         print(f"\nCaption:\n{get_val('caption', 300)}")
         if 'context_paragraphs' in highlights:
-             print(f"\nContesto:\n{get_val('context_paragraphs')}")
+            print(f"\nContesto:\n{get_val('context_paragraphs')}")
 
 def run_shell():
     """Main loop della shell."""
@@ -151,15 +152,28 @@ def run_shell():
             
             # Determina il tipo logico corrente (per formattare l'output)
             current_logic = "docs"
-            if idx == Config.INDEX_TABLES: current_logic = "tables"
-            if idx == Config.INDEX_FIGURES: current_logic = "figures"
+            if idx == Config.INDEX_TABLES: 
+                current_logic = "tables"
+            if idx == Config.INDEX_FIGURES: 
+                current_logic = "figures"
 
             body = build_query(current_logic, query_string)
 
             try:
+                # ------------------------------------------------------
+                # [AGGIUNTO] Timer latenza query (Esperimento 5)
+                # ------------------------------------------------------
+                t_query_start = time.time()
+
                 resp = es.search(index=idx, body=body)
+
+                t_query_end = time.time()
+                query_time_ms = (t_query_end - t_query_start) * 1000
+
                 hits = resp['hits']['hits']
                 total = resp['hits']['total']['value']
+
+                print(f"[TIME] Query su '{idx}' eseguita in {query_time_ms:.2f} ms")
 
                 if hits:
                     print(f"\n>>> Trovati {total} risultati in '{idx}' (Top 5):")
